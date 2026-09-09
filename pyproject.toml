@@ -1,6 +1,6 @@
 [project]
 name = "plantuml-api-server"
-version = "1.1.0"
+version = "1.1.1"
 description = "Modern PlantUML REST API with OpenAPI 3.1, architecture libraries, C4, AWS, Azure, Kubernetes, GCP and Prometheus."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -68,7 +68,7 @@ addopts = "-q"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "1.1.0"
+version = "1.1.1"
 version_scheme = "semver"
 tag_format = "v$version"
 update_changelog_on_bump = true

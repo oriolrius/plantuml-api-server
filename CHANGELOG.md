@@ -5,6 +5,12 @@ All notable changes to this project are documented here. This project adheres to
 [Conventional Commits](https://www.conventionalcommits.org/) via
 [Commitizen](https://commitizen-tools.github.io/commitizen/).
 
+## v1.1.1 (2026-09-09)
+
+### Fix
+
+- widen the guide/help layout to 95% of the viewport
+
 ## v1.1.0 (2026-09-09)
 
 ### Feat
