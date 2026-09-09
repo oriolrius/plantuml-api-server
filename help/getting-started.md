@@ -399,6 +399,38 @@ curl -s -X POST https://plantuml.joor.net/api/v1/decode \
 A malformed token returns `422`. Encoding accepts any non-empty source; decoding accepts any
 non-empty token.
 
+## Embedding a diagram in Markdown or HTML by URL
+
+Because the diagram source lives *inside* the encoded URL, you can drop a rendered diagram
+straight into a Markdown file (a README, docs, a PR description) with **no committed image** — it
+renders live wherever Markdown is displayed (GitHub, GitLab, Gitea, docs sites):
+
+```markdown
+![Login sequence](https://plantuml.joor.net/editor/svg/SoWkIImgAStDuNBCoKnELT2rKt3AJx9IyCbFpypZ0Z8LT852O3ah1IC30mL_Row7rBmKe0u0)
+```
+
+Get the URL from `encode` (use `svg_url` for crisp scaling, or `png_url` for the widest renderer
+compatibility), or build it yourself as `/editor/svg/<encoded>`. In HTML, use an `<img>`:
+
+```html
+<img src="https://plantuml.joor.net/editor/svg/SoWkIImgAStDuNBCoKnELT2rKt3AJx9IyCbFpypZ0Z8LT852O3ah1IC30mL_Row7rBmKe0u0" alt="Login sequence">
+```
+
+Both of the above render this diagram (which, on this page, is shown live from the same source):
+
+```plantuml
+@startuml
+Alice -> Bob: Login
+Bob --> Alice: 200 OK
+@enduml
+```
+
+**Trade-offs (why it's optional):** the image always reflects the encoded source, nothing is
+stored server-side, and no binary lands in git — but the URL grows with the diagram and
+rendering depends on this service being reachable. For a permanent, offline-safe copy, render to
+a file (`format` `svg` or `png`) and commit that instead. This URL-embed trick is exactly how the
+live preview under every example in this guide is produced.
+
 ## Checking service health — `GET /health`
 
 A tiny, dependency-free endpoint for uptime monitors, load-balancer probes, and CI
