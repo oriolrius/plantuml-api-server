@@ -13,7 +13,6 @@ class RenderFormat(StrEnum):
     png = "png"
     svg = "svg"
     txt = "txt"
-    utxt = "utxt"
     pdf = "pdf"
     eps = "eps"
 
@@ -23,7 +22,6 @@ FORMAT_MEDIA: dict[RenderFormat, tuple[str, str]] = {
     RenderFormat.png: ("png", "image/png"),
     RenderFormat.svg: ("svg", "image/svg+xml"),
     RenderFormat.txt: ("txt", "text/plain; charset=utf-8"),
-    RenderFormat.utxt: ("utxt", "text/plain; charset=utf-8"),
     RenderFormat.pdf: ("pdf", "application/pdf"),
     RenderFormat.eps: ("eps", "application/postscript"),
 }

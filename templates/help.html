@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PlantUML API documentation — {{ page.title }}">
+  <title>{{ page.title }} — PlantUML API Docs</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/pico.min.css">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header class="container">
+  <nav>
+    <ul>
+      <li><strong>🧩 PlantUML API</strong></li>
+    </ul>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/editor">Editor</a></li>
+      <li><a href="/help" aria-current="page">Guide</a></li>
+      <li><a href="/docs">API</a></li>
+      <li><a href="https://github.com/oriolrius/plantuml-api-server" class="secondary">GitHub</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="container help-layout">
+  <aside class="help-sidebar">
+    <nav>
+      {% for category, pages in nav %}
+      <details open>
+        <summary>{{ category }}</summary>
+        <ul>
+          {% for p in pages %}
+          <li><a href="/help/{{ p.slug }}"{% if p.slug == active %} class="active" aria-current="page"{% endif %}>{{ p.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </details>
+      {% endfor %}
+    </nav>
+  </aside>
+
+  <article class="help-content">
+    {% if page.toc %}
+    <details class="help-toc">
+      <summary>On this page</summary>
+      {{ page.toc | safe }}
+    </details>
+    {% endif %}
+    {{ page.content | safe }}
+  </article>
+</main>
+
+<footer class="container">
+  <hr>
+  <small>
+    PlantUML API Server v{{ version }} · <a href="/">Home</a> · <a href="/help">Guide</a> ·
+    <a href="/docs">API</a> · <a href="/editor">Editor</a> ·
+    Diagrams as Code, inspired by <a href="https://crashedmind.github.io/PlantUMLHitchhikersGuide/">The Hitchhiker's Guide to PlantUML</a>.
+  </small>
+</footer>
+</body>
+</html>

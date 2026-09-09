@@ -23,6 +23,7 @@ COPY --from=deps /app/.venv /app/.venv
 COPY app ./app
 COPY static ./static
 COPY templates ./templates
+COPY help ./help
 
 USER 10001
 EXPOSE 8080

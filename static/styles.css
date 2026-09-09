@@ -75,3 +75,49 @@ section > h2 { margin-bottom: .5rem; }
 .chip:hover { filter: brightness(1.1); }
 
 pre { border-radius: var(--pico-border-radius); }
+
+/* ---- Help / documentation pages ---- */
+.help-layout {
+  display: grid;
+  grid-template-columns: 16rem 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+.help-sidebar {
+  position: sticky;
+  top: 1rem;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  font-size: .92rem;
+}
+.help-sidebar details { margin-bottom: .5rem; }
+.help-sidebar summary { font-weight: 600; cursor: pointer; }
+.help-sidebar ul { list-style: none; padding-left: .5rem; margin: .4rem 0 0; }
+.help-sidebar li { margin: .15rem 0; }
+.help-sidebar a { text-decoration: none; }
+.help-sidebar a.active { font-weight: 700; color: var(--pico-primary); }
+.help-content { min-width: 0; }
+.help-content h2 { margin-top: 2.5rem; border-bottom: 1px solid var(--pico-muted-border-color); padding-bottom: .3rem; }
+.help-content h3 { margin-top: 1.75rem; }
+.help-content pre { max-width: 100%; overflow: auto; }
+.help-toc { margin-bottom: 2rem; background: var(--pico-card-background-color); border-radius: var(--pico-border-radius); padding: .5rem 1rem; }
+.help-toc summary { cursor: pointer; font-weight: 600; }
+
+/* Live PlantUML example blocks */
+figure.puml {
+  margin: 1.5rem 0;
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: var(--pico-border-radius);
+  padding: 0;
+  overflow: hidden;
+}
+figure.puml .puml-src { margin: 0; border-radius: 0; border-bottom: 1px solid var(--pico-muted-border-color); }
+figure.puml .puml-src code { white-space: pre; }
+figure.puml .puml-render { text-align: center; padding: 1rem; background: #ffffff; }
+figure.puml .puml-render img { max-width: 100%; height: auto; }
+figure.puml figcaption { padding: .5rem 1rem; font-size: .85rem; }
+
+@media (max-width: 992px) {
+  .help-layout { grid-template-columns: 1fr; }
+  .help-sidebar { position: static; max-height: none; border-bottom: 1px solid var(--pico-muted-border-color); padding-bottom: 1rem; margin-bottom: 1rem; }
+}

@@ -117,7 +117,7 @@ All of the following are bundled with the pinned PlantUML version and work under
 
 ## Output formats
 
-`png`, `svg`, `txt`, `utxt`, `pdf`, `eps` — subject to what the running PlantUML build
+`png`, `svg`, `txt`, `pdf`, `eps` — subject to what the running PlantUML build
 supports. The response carries the native media type.
 
 ## Prometheus metrics

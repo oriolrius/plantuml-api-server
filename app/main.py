@@ -5,7 +5,6 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from http import HTTPStatus
-from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -18,18 +17,11 @@ from .config import get_settings
 from .logging import configure_logging, get_logger
 from .metrics import API_INFO, BACKEND_UP, MetricsMiddleware
 from .models import ErrorResponse
+from .paths import resource_dir
 from .plantuml_client import PlantUMLClient, PlantUMLError
-from .routers import encode, examples, libraries, render, system, themes
+from .routers import encode, examples, help, libraries, render, system, themes
 
 log = get_logger()
-
-_PKG = Path(__file__).resolve().parent
-
-
-def _resource_dir(name: str) -> Path:
-    """Resolve a resource dir in both installed (app/<name>) and source (repo/<name>) layouts."""
-    installed = _PKG / name
-    return installed if installed.exists() else _PKG.parent / name
 
 
 DESCRIPTION = """
@@ -97,14 +89,15 @@ def create_app() -> FastAPI:
     )
 
     app.add_middleware(MetricsMiddleware)
-    app.state.templates = Jinja2Templates(directory=str(_resource_dir("templates")))
+    app.state.templates = Jinja2Templates(directory=str(resource_dir("templates")))
 
-    static_dir = _resource_dir("static")
+    static_dir = resource_dir("static")
     if static_dir.exists():
         app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
     # System routes (root: /, /health, /metrics, /api/v1)
     app.include_router(system.router)
+    app.include_router(help.router)
     # Versioned API
     for r in (render.router, encode.router, libraries.router, themes.router, examples.router):
         app.include_router(r, prefix="/api/v1")
