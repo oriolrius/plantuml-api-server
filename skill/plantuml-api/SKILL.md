@@ -37,7 +37,7 @@ curl -fsS -X POST "$PLANTUML_API_BASE/api/v1/render" \
   -o diagram.svg
 ```
 
-Supported formats: `svg`, `png`, `txt`, `utxt`, `pdf`, `eps`. Optional request fields:
+Supported formats: `svg`, `png`, `txt`, `pdf`, `eps`. Optional request fields:
 `theme` (a PlantUML theme name), `libraries` (known library ids to auto-`!include`), and
 `index` (for a source with multiple `@startuml` blocks). You can always just include
 libraries/themes in the source yourself.
@@ -55,6 +55,34 @@ Anyone who opens `editor_url` gets the exact diagram back — the source is insi
 ```bash
 python3 scripts/plantuml_api.py decode "<encoded-token>"
 ```
+
+## Embed a diagram in a Markdown/HTML file by URL (optional)
+
+Because the source lives *inside* the URL, you can embed a rendered diagram directly in a
+`.md` file (README, docs, PR description) with **no committed image** — it renders live
+wherever Markdown is shown (GitHub, GitLab, Gitea, docs sites):
+
+```markdown
+![Login sequence](https://plantuml.joor.net/editor/svg/SoWkIImgAStDuNBCoKnELT2rKt3AJx9IyCbFpypZ0Z8LT852O3ah1IC30mL_Row7rBmKe0u0)
+```
+
+Get the URL from `encode` — use `svg_url` for crisp scaling, `png_url` for the widest
+renderer compatibility:
+
+```bash
+python3 scripts/plantuml_api.py encode diagram.puml    # → svg_url / png_url / editor_url
+```
+
+In HTML, use an `<img>`:
+
+```html
+<img src="https://plantuml.joor.net/editor/svg/SoWkIImgAStDuNBCoKnELT2rKt3AJx9IyCbFpypZ0Z8LT852O3ah1IC30mL_Row7rBmKe0u0" alt="Login sequence">
+```
+
+**Trade-offs (why it's optional):** the image always reflects the encoded source (change the
+diagram → change the URL), nothing is stored server-side, and no binary lands in git — but the
+URL grows with the diagram and rendering depends on the API being reachable. For a permanent,
+offline-safe copy, render to a file instead (`render --out diagram.svg`) and commit that.
 
 ## Discover libraries, themes, examples
 
