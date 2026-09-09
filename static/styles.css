@@ -82,6 +82,11 @@ pre { border-radius: var(--pico-border-radius); }
   grid-template-columns: 16rem 1fr;
   gap: 2.5rem;
   align-items: start;
+  max-width: 95%;
+}
+/* Override Pico's .container max-width so the guide spans 95% of the viewport. */
+main.container.help-layout {
+  max-width: 95%;
 }
 .help-sidebar {
   position: sticky;
