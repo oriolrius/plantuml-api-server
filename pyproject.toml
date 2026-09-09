@@ -1,0 +1,78 @@
+[project]
+name = "plantuml-api-server"
+version = "1.0.0"
+description = "Modern PlantUML REST API with OpenAPI 3.1, architecture libraries, C4, AWS, Azure, Kubernetes, GCP and Prometheus."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Oriol Rius" }]
+keywords = ["plantuml", "fastapi", "openapi", "diagrams-as-code", "architecture-diagrams", "c4", "aws", "azure", "kubernetes", "gcp", "prometheus"]
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "httpx>=0.27",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "prometheus-client>=0.20",
+    "jinja2>=3.1",
+    "python-multipart>=0.0.9",
+]
+
+[project.urls]
+Homepage = "https://plantuml.joor.net"
+Repository = "https://github.com/oriolrius/plantuml-api-server"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2",
+    "pytest-asyncio>=0.23",
+    "respx>=0.21",
+    "ruff>=0.5",
+    "mypy>=1.10",
+    "commitizen>=3.27",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"static" = "app/static"
+"templates" = "app/templates"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "ASYNC"]
+# B008: FastAPI's `param: T = Depends(...)` idiom is intentional.
+ignore = ["B008"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_unused_ignores = true
+warn_redundant_casts = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "1.0.0"
+version_scheme = "semver"
+tag_format = "v$version"
+update_changelog_on_bump = true
+major_version_zero = false
+version_files = [
+    "pyproject.toml:version",
+    "app/__init__.py:__version__",
+]

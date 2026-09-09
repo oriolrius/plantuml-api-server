@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Diagrams as Code — a modern REST API and editor for PlantUML: UML, AWS, Azure, Kubernetes, C4, GCP and more.">
+  <title>PlantUML API Server — Diagrams as Code</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/pico.min.css">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header class="container">
+  <nav>
+    <ul>
+      <li><strong>🧩 PlantUML API</strong></li>
+    </ul>
+    <ul>
+      <li><a href="{{ editor_path }}">Editor</a></li>
+      <li><a href="/docs">API Docs</a></li>
+      <li><a href="#examples">Examples</a></li>
+      <li><a href="/api/v1">REST</a></li>
+      <li><a href="https://github.com/oriolrius/plantuml-api-server" class="secondary">GitHub</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+    <hgroup>
+      <h1>PlantUML API Server</h1>
+      <p>Diagrams as Code — UML, Cloud Architecture, Kubernetes, C4 and more.</p>
+    </hgroup>
+    <p class="hero-sub">
+      A modern REST API and full editor around the official PlantUML Server. Render to
+      PNG, SVG, TXT or PDF; discover AWS, Azure, Kubernetes, C4, GCP, security and icon
+      libraries; and keep your diagrams as versionable text.
+    </p>
+    <div class="actions">
+      <a href="{{ editor_path }}" role="button">Open Editor</a>
+      <a href="/docs" role="button" class="secondary">API Documentation</a>
+      <a href="/api/v1" role="button" class="secondary outline">Explore REST API</a>
+      <a href="#examples" role="button" class="contrast outline">View Examples</a>
+    </div>
+  </section>
+
+  <section id="dac">
+    <h2>Diagrams as Code</h2>
+    <div class="grid-cards">
+      <article><h4>📝 Plain text</h4><p>Describe diagrams in a simple, readable language — no binary files, no drag-and-drop.</p></article>
+      <article><h4>🔀 Version controlled</h4><p>Diagrams live beside your code. One source of truth, not a stale export.</p></article>
+      <article><h4>✅ Reviewed in PRs</h4><p>A diagram change is a readable diff — proposed, discussed and approved like code.</p></article>
+      <article><h4>⚙️ Generated in CI/CD</h4><p>Regenerate on every build and publish to many formats automatically.</p></article>
+      <article><h4>♻️ Reproducible</h4><p>The same text always produces the same picture, on any machine, forever.</p></article>
+    </div>
+  </section>
+
+  <section id="showcase">
+    <h2>Not just UML</h2>
+    <p>PlantUML draws far more than sequence diagrams. This service exposes it all.</p>
+    <div class="grid-cards">
+      <article><h4>UML</h4><p>Sequence, class, component, deployment, activity, state, use-case & more.</p></article>
+      <article><h4>AWS</h4><p>Official AWS architecture icons via the modern <code>awslib</code>.</p></article>
+      <article><h4>Azure</h4><p>Microsoft Azure service icons for cloud architecture.</p></article>
+      <article><h4>Kubernetes</h4><p>K8s workloads, services & control-plane with the <code>k8s</code> icon set.</p></article>
+      <article><h4>C4 Model</h4><p>Context, Container, Component & Deployment — architecture as code.</p></article>
+      <article><h4>GCP</h4><p>Google Cloud architecture icons, bundled and INTERNET-safe.</p></article>
+      <article><h4>Network &amp; Security</h4><p>Open Security Architecture (OSA) icons for network/security diagrams.</p></article>
+      <article><h4>Icons &amp; Libraries</h4><p>Material, Office, Logos, Devicons, Font-Awesome, ArchiMate & sprites.</p></article>
+      <article><h4>Themes</h4><p>Restyle any diagram with dozens of built-in themes.</p></article>
+    </div>
+  </section>
+
+  <section id="examples">
+    <h2>Interactive examples</h2>
+    <p>Live-rendered on this page. Open any in the editor or call the API.</p>
+    <div class="grid-examples">
+      {% for f in featured %}
+      <article class="example">
+        <header><strong>{{ f.ex.title }}</strong><br><small>{{ f.ex.description }}</small></header>
+        <div class="diagram"><img src="{{ editor_path }}/svg/{{ f.encoded }}" alt="{{ f.ex.title }}" loading="lazy"></div>
+        <footer>
+          <a href="{{ editor_path }}/svg/{{ f.encoded }}" target="_blank">Render</a> ·
+          <a href="{{ editor_path }}/uml/{{ f.encoded }}" target="_blank">Open in Editor</a> ·
+          <a href="/api/v1/examples/{{ f.ex.id }}" target="_blank">API</a>
+        </footer>
+      </article>
+      {% endfor %}
+    </div>
+    <p><a href="/api/v1/examples" role="button" class="outline">Browse all {{ examples|length }} examples →</a></p>
+  </section>
+
+  <section id="try">
+    <h2>Try the API</h2>
+    <pre><code>curl -X POST https://your-host/api/v1/render \
+  -H 'content-type: application/json' \
+  -d '{"source":"@startuml\nAlice -> Bob: Hello\n@enduml","format":"svg"}'</code></pre>
+    <p>Full interactive documentation at <a href="/docs">/docs</a> · schema at
+      <a href="/openapi.json">/openapi.json</a>.</p>
+  </section>
+
+  <section id="libraries">
+    <h2>Architecture libraries</h2>
+    <div class="chips">
+      {% for lib in libraries %}<a href="/api/v1/libraries/{{ lib.id }}" class="chip">{{ lib.name }}</a>{% endfor %}
+    </div>
+  </section>
+
+</main>
+
+<footer class="container">
+  <hr>
+  <small>
+    PlantUML API Server v{{ version }}{% if plantuml_version %} · PlantUML {{ plantuml_version }}{% endif %}
+    · <a href="/health">health</a> · <a href="/metrics">metrics</a> · <a href="/docs">docs</a>
+    · Diagrams as Code, inspired by <a href="https://crashedmind.github.io/PlantUMLHitchhikersGuide/">The Hitchhiker's Guide to PlantUML</a>.
+  </small>
+</footer>
+
+</body>
+</html>
