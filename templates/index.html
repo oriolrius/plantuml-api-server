@@ -18,6 +18,7 @@
     <ul>
       <li><a href="{{ editor_path }}">Editor</a></li>
       <li><a href="/help">Guide</a></li>
+      <li><a href="/help/claude-skill">Skill</a></li>
       <li><a href="/docs">API Docs</a></li>
       <li><a href="#examples">Examples</a></li>
       <li><a href="/api/v1">REST</a></li>
@@ -99,6 +100,18 @@
   -d '{"source":"@startuml\nAlice -> Bob: Hello\n@enduml","format":"svg"}'</code></pre>
     <p>Full interactive documentation at <a href="/docs">/docs</a> · schema at
       <a href="/openapi.json">/openapi.json</a>.</p>
+  </section>
+
+  <section id="skill">
+    <h2>Use it from your AI agent</h2>
+    <p>A ready-made <strong>Claude Code skill</strong> teaches an AI coding agent to create and
+    render diagrams through this API — using this site's docs as its reference. It bundles a
+    tiny client plus verified cheatsheets for every diagram type and every architecture icon
+    library, so the agent writes correct PlantUML the first time.</p>
+    <div class="actions">
+      <a href="/help/claude-skill" role="button" class="outline">Skill guide →</a>
+      <a href="https://github.com/oriolrius/plantuml-api-server/tree/main/skill/plantuml-api" role="button" class="secondary outline">Skill source ↗</a>
+    </div>
   </section>
 
   <section id="libraries">

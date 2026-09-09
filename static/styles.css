@@ -77,14 +77,15 @@ section > h2 { margin-bottom: .5rem; }
 pre { border-radius: var(--pico-border-radius); }
 
 /* ---- Help / documentation pages ---- */
+/* Two columns: a persistent left menu + the content pane. A small gap and no extra
+   right padding let the content pane use ~99% of the canvas beside the open menu. */
 .help-layout {
   display: grid;
-  grid-template-columns: 16rem 1fr;
-  gap: 2.5rem;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  gap: 0.5rem;
   align-items: start;
   max-width: 95%;
 }
-/* Override Pico's .container max-width so the guide spans 95% of the viewport. */
 main.container.help-layout {
   max-width: 95%;
 }
@@ -93,7 +94,7 @@ main.container.help-layout {
   top: 1rem;
   max-height: calc(100vh - 2rem);
   overflow-y: auto;
-  font-size: .92rem;
+  font-size: 0.92rem;
 }
 .help-sidebar details { margin-bottom: .5rem; }
 .help-sidebar summary { font-weight: 600; cursor: pointer; }
@@ -122,7 +123,7 @@ figure.puml .puml-render { text-align: center; padding: 1rem; background: #fffff
 figure.puml .puml-render img { max-width: 100%; height: auto; }
 figure.puml figcaption { padding: .5rem 1rem; font-size: .85rem; }
 
-@media (max-width: 992px) {
+@media (max-width: 768px) {
   .help-layout { grid-template-columns: 1fr; }
-  .help-sidebar { position: static; max-height: none; border-bottom: 1px solid var(--pico-muted-border-color); padding-bottom: 1rem; margin-bottom: 1rem; }
+  .help-sidebar { position: static; max-height: none; margin-bottom: 1rem; }
 }
