@@ -5,6 +5,12 @@ All notable changes to this project are documented here. This project adheres to
 [Conventional Commits](https://www.conventionalcommits.org/) via
 [Commitizen](https://commitizen-tools.github.io/commitizen/).
 
+## v1.1.2 (2026-09-09)
+
+### Fix
+
+- content pane fills 99% of the canvas beside the open menu; add skill references
+
 ## v1.1.1 (2026-09-09)
 
 ### Fix
