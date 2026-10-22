@@ -5,6 +5,12 @@ All notable changes to this project are documented here. This project adheres to
 [Conventional Commits](https://www.conventionalcommits.org/) via
 [Commitizen](https://commitizen-tools.github.io/commitizen/).
 
+## v1.1.4 (2026-10-22)
+
+### Fix
+
+- **security**: ship a patched CA bundle and certifi 2026.10.19
+
 ## v1.1.3 (2026-09-09)
 
 ### Fix
