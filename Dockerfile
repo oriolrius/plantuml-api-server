@@ -16,6 +16,12 @@ ENV PYTHONUNBUFFERED=1 \
     PATH="/app/.venv/bin:$PATH"
 WORKDIR /app
 
+# Always ship the newest CA bundle from the distro (eMudhra CA compromise, 2026-10):
+# a stale base layer would otherwise keep trusting distrusted roots.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends --only-upgrade ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
 # Non-root runtime user.
 RUN useradd --system --uid 10001 --home-dir /app --no-create-home appuser
 
