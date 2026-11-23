@@ -5,6 +5,12 @@ All notable changes to this project are documented here. This project adheres to
 [Conventional Commits](https://www.conventionalcommits.org/) via
 [Commitizen](https://commitizen-tools.github.io/commitizen/).
 
+## v1.1.5 (2026-11-23)
+
+### Fix
+
+- **render**: POST source to PlantUML Server instead of GET URL
+
 ## v1.1.4 (2026-10-22)
 
 ### Fix
