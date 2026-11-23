@@ -26,15 +26,15 @@ was captured against the live service. The interactive Swagger UI lives at
 ### Base URL and versioning
 
 Every functional endpoint is namespaced under `/api/v1`. The un-prefixed operational
-endpoints — [`/health`](#health-get-health) and [`/metrics`](#metrics-get-metrics) — sit at
+endpoints — [`/health`](#health-check-get-health) and [`/metrics`](#metrics-get-metrics) — sit at
 the root so that simple uptime probes and Prometheus scrapers do not have to know the API
 version. The current `api_version` is `1.0.0`; you can read it live from
-[`/api/v1`](#api-discovery-get-api-v1) or `/health`.
+[`/api/v1`](#api-discovery-get-apiv1) or `/health`.
 
 ### Media types
 
 Most endpoints return `application/json`. The one exception is
-[`/api/v1/render`](#render-a-diagram-post-api-v1-render), which returns the **native media
+[`/api/v1/render`](#render-a-diagram-post-apiv1render), which returns the **native media
 type** of the diagram you asked for — `image/png`, `image/svg+xml`, `text/plain` or
 `application/pdf`. Binary responses are streamed as raw bytes, **never base64-encoded**, so
 you save the response body directly to a file.
@@ -87,7 +87,8 @@ tell "you sent malformed JSON" apart from "PlantUML could not parse your diagram
 | ---- | ------------------------------------------------------------------------------------------------- |
 | 200  | Success. For `/render`, the body is the diagram in the requested media type.                      |
 | 404  | A path parameter (`{library}`, `{theme_id}`, `{example_id}`) did not match a known resource.       |
-| 413  | The request body (your PlantUML source) exceeds the server's maximum accepted size.               |
+| 413  | The PlantUML source in a `/render` body is larger than 100,000 bytes (see [Size limits](#size-limits)). |
+| 414 / 431 | Only for image URLs (`/editor/svg/<token>` and the like): the URL is longer than about 8,000 characters. Use `POST /api/v1/render` instead. |
 | 422  | Either the JSON body failed validation, or the PlantUML source has a syntax error.                |
 | 503  | The PlantUML backend is unreachable (down or restarting).                                          |
 | 504  | The PlantUML backend accepted the job but did not finish rendering before the timeout.            |
@@ -127,8 +128,8 @@ lines into your source for you; they are never a replacement for PlantUML syntax
 | ----------- | ----------------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------- |
 | `source`    | string            | **yes**  | —       | PlantUML source. Submit normal PlantUML, `@startuml … @enduml`. Minimum length 1.                              |
 | `format`    | enum              | no       | `svg`   | Output format. One of `png`, `svg`, `txt`, `utxt`, `pdf`, `eps` (`RenderFormat`).                              |
-| `theme`     | string \| null    | no       | `null`  | A PlantUML theme name, injected as `!theme <name>`. See [`/api/v1/themes`](#list-themes-get-api-v1-themes).    |
-| `libraries` | string[] \| null  | no       | `null`  | Known library ids whose `!include` lines are injected for you. See [`/api/v1/libraries`](#list-libraries-get-api-v1-libraries). |
+| `theme`     | string \| null    | no       | `null`  | A PlantUML theme name, injected as `!theme <name>`. See [`/api/v1/themes`](#list-themes-get-apiv1themes).    |
+| `libraries` | string[] \| null  | no       | `null`  | Known library ids whose `!include` lines are injected for you. See [`/api/v1/libraries`](#list-libraries-get-apiv1libraries). |
 | `index`     | integer ≥ 0 \| null | no     | `null`  | Which diagram to render when the source contains multiple `@startuml` blocks (0 = the first).                 |
 
 **About `format`.** `png`, `svg` and `pdf` produce their obvious media types. `txt`
@@ -232,6 +233,23 @@ Other render-time failures return the same `ErrorResponse` shape with the matchi
 **503** (`"title": "Service Unavailable"`, `"detail": "PlantUML backend unavailable"`) and
 **504** (`"title": "Gateway Timeout"`, `"detail": "PlantUML render timed out"`).
 
+#### Size limits
+
+| How you render | Limit | Over the limit |
+| --- | --- | --- |
+| `POST /api/v1/render` (JSON body) | **100,000 bytes** of PlantUML source (UTF-8, before compression) | `413` |
+| Image URL `GET /editor/{svg,png,txt,uml}/<token>` (from `encode`, or embedded in Markdown/HTML) | about **8,000 characters** of encoded token (about 6 KB of compressed source) | `414` or `431` from the PlantUML server |
+
+`/render` sends your source to the renderer in the request body, so the size of the
+diagram does not matter. Icon-heavy diagrams are fine: a diagram with 20 inline 48×48
+sprites (a 37 KB token) renders with `200`. Only image URLs carry the diagram *inside* the
+URL, and so only they have the URL limit. For a big diagram, render it with `/render` and
+save the file; do not embed it by URL.
+
+Before API 1.1.5, `/render` also used a URL internally and failed above about 5 KB of
+compressed source with `422` (`"detail": "PlantUML backend returned HTTP 414"`). That limit
+is gone.
+
 #### A complete, renderable diagram
 
 The lifecycle a `/render` call goes through, as a diagram this very docs page renders live:
@@ -256,6 +274,12 @@ API --> Client: 200 rendered diagram
 PlantUML servers accept diagrams as a compact, URL-safe token (deflate-compressed then
 mapped onto a PlantUML-specific alphabet). These two endpoints convert between raw source
 and that token so you can build shareable image URLs, or recover source from a link.
+
+The token grows with the diagram. An image URL works up to about **8,000 characters** of
+token; above that the PlantUML server answers `414` or `431`. Check `len(encoded)` before
+you share or embed a URL. For a larger diagram, use
+[`POST /api/v1/render`](#render-a-diagram-post-apiv1render), which has no URL limit (see
+[Size limits](#size-limits)).
 
 ### Encode source — `POST /api/v1/encode`
 

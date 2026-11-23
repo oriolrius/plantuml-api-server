@@ -90,6 +90,11 @@ PDF file, or the plain text. Nothing is base64-wrapped; the response body *is* t
 Only `source` is mandatory. The smallest possible request is just `{"source": "..."}`, which
 renders SVG.
 
+**How big can a diagram be?** Up to 100,000 bytes of source. The source travels in the
+request body, so large and icon-heavy diagrams (many sprites, big C4 or AWS maps) render
+without problems. Only image *URLs* (see [Embedding](#embedding-a-diagram-in-markdown-or-html-by-url))
+have a length limit.
+
 ### The output formats
 
 The `format` field selects both the rendering and the response `Content-Type`:
@@ -317,6 +322,7 @@ HTTP status, so always branch on the status code:
 | Status | Meaning | Typical cause |
 |---|---|---|
 | `200` | OK | The diagram body follows, in the requested media type |
+| `413` | Source too large | `source` is larger than 100,000 bytes |
 | `422` | Invalid PlantUML source | Syntax error, or `source` empty / missing |
 | `503` | Backend unavailable | The PlantUML engine is temporarily down |
 | `504` | Render timed out | The diagram was too large / slow to render |
@@ -427,7 +433,13 @@ Bob --> Alice: 200 OK
 
 **Trade-offs (why it's optional):** the image always reflects the encoded source, nothing is
 stored server-side, and no binary lands in git — but the URL grows with the diagram and
-rendering depends on this service being reachable. For a permanent, offline-safe copy, render to
+rendering depends on this service being reachable.
+
+**URL length limit:** an image URL works up to about 8,000 characters of encoded token
+(about 6 KB of compressed source). Above that, the PlantUML server answers `414` or `431`
+and the image is broken. Most diagrams are far below it (every example in this guide is
+under 1,000 characters), but diagrams with many inline sprites can go over it. For those,
+render with `POST /api/v1/render` and commit the file. For a permanent, offline-safe copy, render to
 a file (`format` `svg` or `png`) and commit that instead. This URL-embed trick is exactly how the
 live preview under every example in this guide is produced.
 
