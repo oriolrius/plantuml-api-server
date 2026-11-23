@@ -30,12 +30,12 @@ VERSION_TXT = b"      PlantUML 1.2026.8 Git Commit abc Build Time 2026-09-05"
 def _make(svg_side_effect=None, svg_error: str | None = None):
     with respx.mock(assert_all_called=False) as mock:
         mock.get(url__regex=r".*/plantuml/?$").mock(return_value=httpx.Response(200))
-        mock.get(url__regex=r".*/txt/.*").mock(
+        mock.post(url__regex=r".*/txt(/.*)?$").mock(
             return_value=httpx.Response(
                 200, content=VERSION_TXT, headers={"content-type": "text/plain"}
             )
         )
-        svg_route = mock.get(url__regex=r".*/svg/.*")
+        svg_route = mock.post(url__regex=r".*/svg(/.*)?$")
         if svg_side_effect is not None:
             svg_route.mock(side_effect=svg_side_effect)
         elif svg_error is not None:
@@ -55,7 +55,7 @@ def _make(svg_side_effect=None, svg_error: str | None = None):
                     200, content=SVG, headers={"content-type": "image/svg+xml"}
                 )
             )
-        mock.get(url__regex=r".*/png/.*").mock(
+        mock.post(url__regex=r".*/png(/.*)?$").mock(
             return_value=httpx.Response(200, content=PNG, headers={"content-type": "image/png"})
         )
         from app.main import app

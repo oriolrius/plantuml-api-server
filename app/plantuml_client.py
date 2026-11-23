@@ -1,9 +1,13 @@
 """Async client for the official PlantUML Server.
 
 The API never re-implements PlantUML rendering; it delegates to the real server.
-This client encodes source, drives the native `/png|/svg|/txt|…` endpoints, maps
+This client POSTs the raw source to the native `/png|/svg|/txt|…` endpoints, maps
 transport failures onto typed exceptions, and best-effort discovers the running
 PlantUML version.
+
+The source goes in the request body, not in the URL: a GET with the encoded source
+in the path fails with HTTP 414 once the URL exceeds Jetty's request-header limit
+(8 KB, i.e. about 5-6 KB of compressed source), which breaks large icon diagrams.
 """
 
 from __future__ import annotations
@@ -13,7 +17,6 @@ import time
 
 import httpx
 
-from .encoding import encode
 from .logging import get_logger
 from .metrics import BACKEND_REQUEST_DURATION
 
@@ -54,20 +57,23 @@ class PlantUMLClient:
     async def aclose(self) -> None:
         await self._client.aclose()
 
-    def _url(self, fmt_token: str, encoded: str, index: int | None = None) -> str:
+    def _url(self, fmt_token: str, index: int | None = None) -> str:
         if index is not None:
-            return f"{self.base_url}/{fmt_token}/{index}/{encoded}"
-        return f"{self.base_url}/{fmt_token}/{encoded}"
+            return f"{self.base_url}/{fmt_token}/{index}"
+        return f"{self.base_url}/{fmt_token}"
 
     async def render(
         self, source: str, fmt_token: str, index: int | None = None
     ) -> tuple[bytes, str]:
         """Render ``source`` to bytes. Returns (content, content_type)."""
-        encoded = encode(source)
-        url = self._url(fmt_token, encoded, index)
+        url = self._url(fmt_token, index)
         start = time.perf_counter()
         try:
-            resp = await self._client.get(url)
+            resp = await self._client.post(
+                url,
+                content=source.encode("utf-8"),
+                headers={"Content-Type": "text/plain; charset=utf-8"},
+            )
         except (httpx.ConnectError, httpx.ConnectTimeout) as exc:
             raise PlantUMLUnavailable("PlantUML backend is unreachable") from exc
         except httpx.ReadTimeout as exc:

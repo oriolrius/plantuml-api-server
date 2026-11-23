@@ -56,3 +56,29 @@ def test_render_too_large(client) -> None:
 def test_render_requires_source(client) -> None:
     r = client.post("/api/v1/render", json={"format": "svg"})
     assert r.status_code == 422
+
+
+def test_render_large_source_goes_in_body(make_client) -> None:
+    """Regression: large diagrams used to fail with 414 (source was in the URL)."""
+    import random
+    import string
+
+    random.seed(1)
+    classes = "\n".join(
+        f"class C{i} {{\n  +{''.join(random.choices(string.ascii_letters, k=40))}\n}}"
+        for i in range(400)
+    )
+    big = f"@startuml\n{classes}\n@enduml"
+    seen: list[httpx.Request] = []
+
+    def backend(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        return httpx.Response(200, content=b"<svg/>", headers={"content-type": "image/svg+xml"})
+
+    with make_client(svg_side_effect=backend) as client:
+        r = client.post("/api/v1/render", json={"source": big, "format": "svg"})
+    assert r.status_code == 200
+    req = seen[-1]
+    assert req.method == "POST"
+    assert req.url.path.endswith("/svg")
+    assert req.content.decode("utf-8") == big
